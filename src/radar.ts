@@ -1,4 +1,4 @@
-import {entityList, mT} from "./global";
+import {clientState, entityList, mT} from "./global";
 import {EntityResolver} from "./entityList";
 
 export class Radar {
@@ -24,7 +24,7 @@ export class Radar {
     updateLocalPlayer(lp: EntityResolver) {
         this.localPlayer = lp;
         this.localPlayerPos = this.localPlayer.m_vecOrigin(mT.vector3);
-        this.localAngels = this.localPlayer.m_angEyeAnglesX(mT.vector3);
+        this.localAngels = clientState.resolver().dwClientState_ViewAngles(mT.vector3); // this.localPlayer.m_angEyeAnglesX(mT.vector3);
     }
     calculateRadarPosition(playerNo: number): { x?: number; y?: number } {
 
