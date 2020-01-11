@@ -42,7 +42,26 @@
         }
 
     }
-    setInterval(() => {getJSON('pos.json', cb);}, 50);
+    var startup = () => {
+        const url = 'ws://localhost:8080';
+        const connection = new WebSocket(url);
+
+        connection.onopen = () => {
+            //...
+        }
+
+        connection.onerror = error => {
+            console.log(`WebSocket error: ${error}`);
+        }
+        connection.onopen = () => {
+            connection.send('hey')
+        }
+        connection.onmessage = (e) => {
+            cb(null,JSON.parse(e.data))
+        }
+    }
+    startup();
+    // setInterval(() => {getJSON('pos.json', cb);}, 50);
 
 </script>
 

@@ -9,8 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "memoryJs": "latest",
     "memoryjs": "^3.2.3",
-    "memoryJs": "latest"
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@types/node": "^13.1.4",
