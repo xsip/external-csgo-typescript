@@ -4,7 +4,7 @@
   "description": "external csgo example ts base by xsip",
   "scripts": {
     "frontend": "cd frontend && http-server",
-    "backend": "cd src && ts-node index.ts",
+    "backend": "cd src && ts-node index.ts"
   },
   "author": "",
   "license": "ISC",
