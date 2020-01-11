@@ -57,8 +57,8 @@ export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolv
     radar = new Radar();
 
     console.log('hack initialized..\nstarting main loop..');
-    while (true) {
-        // const main = setInterval(() => {
+    // while (true) {
+        const main = setInterval(() => {
         // radar.readLocalPlayer();
         const localPlayer: EntityResolver = entityList.getLocalPlayer();
         radar.updateLocalPlayer(localPlayer);
@@ -76,6 +76,5 @@ export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolv
         }
         afterLoop();
 
-    }
-    // },config.setIntervalSleep);
+    },0);
 };

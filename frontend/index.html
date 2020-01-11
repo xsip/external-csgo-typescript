@@ -1,74 +1,10 @@
-<canvas id="myCanvas" width="200" height="200"></canvas>
-<div id="info"></div>
-<script>
-
-    var getJSON = function (url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'json';
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                callback(status, xhr.response);
-            }
-        };
-        xhr.send();
-    };
-
-    var canvas = document.getElementById("myCanvas");
-    var canvasWidth = canvas.width;
-    var canvasHeight = canvas.height;
-    var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#FF0000";
-    canvas.style.border = '4px solid rgba(35,35,35,1)';
-    function drawPixel(x, y, r, g, b, a) {
-        ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
-        ctx.fillRect(x-5,y-5,10,10);
-    }
-
-    function updateCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        // ctx.putImageData(canvasData, 0, 0);
-    }
-
-
-    const cb = (s, d) => {
-        updateCanvas();
-        drawPixel(100-5, 100-5, 0, 255, 0, 255);
-        for (let key in d) {
-            // console.log(d[key]);
-            drawPixel(d[key].x, d[key].y, 255, 0, 0, 255);
-        }
-
-    }
-    var startup = () => {
-        const url = 'ws://localhost:8080';
-        const connection = new WebSocket(url);
-87
-        connection.onopen = () => {
-            //...
-        }
-
-        connection.onerror = error => {
-            const l = document.createElement('h1');
-            l.innerText = 'ERROR CONNECTING!';
-            document.body.appendChild(l);
-            console.log(`WebSocket error: ${error}`);
-        }
-        connection.onopen = () => {
-            connection.send('hey')
-        }
-        connection.onmessage = (e) => {
-            var info = document.getElementById('info');
-            const d = JSON.parse(e.data);
-            info.innerText = (d.currentMap);
-            cb(null,d.radar);
-        }
-    }
-    startup();
-    // setInterval(() => {getJSON('pos.json', cb);}, 50);
-
-</script>
-
+<html>
+<head>
+    <title>External</title>
+    <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+    <canvas id="myCanvas" width="200" height="200"></canvas>
+    <div id="info"></div>
+</body>
+</html>
