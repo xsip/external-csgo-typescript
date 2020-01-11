@@ -44,6 +44,7 @@ export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extend
 interface HackConfig {
     setIntervalSleep: number;
 }
+process.title = 'External Cs go!';
 const config: HackConfig = {setIntervalSleep: 20};
 export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolver, localPlayer: EntityResolver, i?: number) => void, afterLoop: () => void) => {
     proc = new ProcessInstance(processName);
@@ -56,7 +57,8 @@ export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolv
     radar = new Radar();
 
     console.log('hack initialized..\nstarting main loop..');
-    const main = setInterval(() => {
+    while (true) {
+        // const main = setInterval(() => {
         // radar.readLocalPlayer();
         const localPlayer: EntityResolver = entityList.getLocalPlayer();
         radar.updateLocalPlayer(localPlayer);
@@ -73,5 +75,7 @@ export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolv
             }
         }
         afterLoop();
-    },config.setIntervalSleep);
+
+    }
+    // },config.setIntervalSleep);
 };

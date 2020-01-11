@@ -1,14 +1,14 @@
 import {initHack, radar} from './global';
 import * as fs from "fs";
 import {startWsServer} from "./websocket";
-let res = {};
+let res = [];
 startWsServer((ws: WebSocket) => {
     console.log('WS Server started!');
     initHack('csgo.exe', (e,l, i) => {
-        res[i] = radar.calculateRadarPosition(i);
+        res.push(radar.calculateRadarPosition(i));
     }, () => {
         ws.send(JSON.stringify(res));
         // fs.writeFileSync('../frontend/pos.json', JSON.stringify(res), 'utf-8');
-        res = {};
+        res = [];
     });
 });
