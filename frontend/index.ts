@@ -2,12 +2,15 @@ interface Vec2 {
     x: number;
     y: number
 }
-
+interface RadarEntry {
+    pos: Vec2;
+    isLocal: boolean;
+    team: number;
+};
 interface Data {
-    radar: Vec2[];
+    radar: RadarEntry[]
     currentMap: string;
 }
-
 class ExternalFrontend {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D | null;
@@ -64,11 +67,21 @@ class ExternalFrontend {
         this.ctx.fillRect(x - 5, y - 5, 10, 10);
     }
 
-    updateRadar(radarData: Vec2[]) {
+    updateRadar(radarData: RadarEntry[]) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
+        // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
         for (let key in radarData) {
-            this.drawPixel(radarData[key].x, radarData[key].y, 255, 0, 0, 255);
+            if(radarData[key].isLocal) {
+                this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
+            } else {
+                if (radarData[key].team === 2) {
+                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
+                } else if (radarData[key].team === 3) {
+                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
+                }
+            }
+
+
         }
     }
 }

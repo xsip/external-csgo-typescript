@@ -46,7 +46,7 @@ interface HackConfig {
 }
 process.title = 'External Cs go!';
 const config: HackConfig = {setIntervalSleep: 20};
-export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolver, localPlayer: EntityResolver, i?: number) => void, afterLoop: () => void) => {
+export const initHack = (processName: string, forEachPlayer: (enemy: EntityResolver, localPlayer: EntityResolver, i?: number) => void, afterLoop: () => void) => {
     proc = new ProcessInstance(processName);
     gM = proc.getModule.bind(proc);
     rpm = proc.readMemory.bind(proc);
@@ -69,8 +69,8 @@ export const initHack = (processName: string, forEachEnemy: (enemy: EntityResolv
             const entity = entityList.getPlayer(i);
             if (entity && /*entity.m_iHealth(mT.int) > 1 &&*/ entity.m_lifeState(mT.int) === 0) {
                 let enemyTeam: number = entity.m_iTeamNum(mT.int);
-                if ((enemyTeam === 2 || enemyTeam === 3) && enemyTeam !== localPlayer.m_iTeamNum(mT.int)) {
-                    forEachEnemy(entity, localPlayer, i);
+                if ((enemyTeam === 2 || enemyTeam === 3) /*&& enemyTeam !== localPlayer.m_iTeamNum(mT.int)*/) {
+                    forEachPlayer(entity, localPlayer, i);
                 }
             }
         }

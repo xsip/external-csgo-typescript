@@ -1,4 +1,5 @@
 "use strict";
+;
 var ExternalFrontend = /** @class */ (function () {
     function ExternalFrontend() {
         var _this = this;
@@ -45,9 +46,19 @@ var ExternalFrontend = /** @class */ (function () {
     };
     ExternalFrontend.prototype.updateRadar = function (radarData) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
+        // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
         for (var key in radarData) {
-            this.drawPixel(radarData[key].x, radarData[key].y, 255, 0, 0, 255);
+            if (radarData[key].isLocal) {
+                this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
+            }
+            else {
+                if (radarData[key].team === 2) {
+                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
+                }
+                else if (radarData[key].team === 3) {
+                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
+                }
+            }
         }
     };
     return ExternalFrontend;
