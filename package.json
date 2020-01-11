@@ -1,0 +1,22 @@
+{
+  "name": "external-go",
+  "version": "1.0.0",
+  "description": "external csgo example ts base by xsip",
+  "scripts": {
+    "frontend": "cd frontend && http-server",
+    "backend": "cd src && ts-node index.ts",
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "memoryjs": "^3.2.3",
+    "memoryJs": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.4",
+    "http-server": "^0.12.1",
+    "ts-node": "^8.6.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4"
+  }
+}
