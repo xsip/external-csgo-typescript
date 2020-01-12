@@ -1,11 +1,41 @@
 <html>
 <head>
     <title>External</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script type="text/javascript" src="index.js"></script>
+    <style>
+        #myCanvas {
+            border-radius: 210px;
+            background-color: rgba(235, 235, 235, 1);
+        }
+
+        body {
+            background-color: rgba(35, 35, 35, 1);
+            color: rgba(235, 235, 235, 1);
+        }
+        .withborder {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            border: 2px solid rgba(235,235,235,1);
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
-    <div id="info"></div>
-    <label>RadarSize: </label><input type="number" id="radarSize"/><input type="submit" id="changeRadarSize" value="change">
+<canvas id="myCanvas"></canvas>
+<div id="info"></div>
+<section>
+<div class="container withborder">
+    <h2>Settings</h2>
+<div class="container">
+    <h4>Radarsize</h4>
+    <div class="form-inline">
+        <input id="radarSize" type="number" class="form-control mr-1">
+        <button id="changeRadarSize" class="btn btn-primary">enter</button>
+    </div>
+</div>
+</div>
 </body>
 </html>
