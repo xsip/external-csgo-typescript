@@ -64,4 +64,8 @@ export class Radar {
         return dotPos;
 
     }
+
+    setRadarSize(size: number) {
+        this.radarSize = size;
+    }
 }

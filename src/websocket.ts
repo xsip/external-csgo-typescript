@@ -1,15 +1,33 @@
 import * as _WebSocket from 'ws';
-const wss = new _WebSocket.Server({ port: 8080 });
+import {radar, removeFromWsConnections, wsConnections} from "./global";
+
+const wss = new _WebSocket.Server({port: 8080});
 
 
+const handleRequest = (request: any) => {
+    if (request.radarSize) {
+        radar.setRadarSize(request.radarSize);
+    }
+};
 
-export const startWsServer = (afterConnection: (ws: WebSocket ) => void) => {
+export const startWsServer = (afterConnection: () => void) => {
 
     wss.on('connection', ws => {
 
         ws.on('message', message => {
-            console.log(`Received message => ${message}`)
+            console.log(`Received message => ${message}`);
+            try {
+                handleRequest(JSON.parse(message + ''));
+            } catch {
+
+            }
         });
-        afterConnection(ws);
+        wsConnections.push(ws);
+
+        ws.onclose = () => {
+            console.log('removing connection..');
+            removeFromWsConnections(ws);
+        };
     });
-}
+    afterConnection();
+};

@@ -1,4 +1,4 @@
-import {clientState, entityList, initHack, mT, radar} from './global';
+import {clientState, entityList, initHack, mT, radar, wsConnections} from './global';
 import * as fs from "fs";
 import {startWsServer} from "./websocket";
 
@@ -6,6 +6,7 @@ interface Vec2 {
     x: number;
     y: number
 }
+
 interface Data {
     radar: {
         pos: Vec2;
@@ -16,7 +17,7 @@ interface Data {
 }
 
 let res = [];
-startWsServer((ws: WebSocket) => {
+startWsServer(() => {
     console.log('WS Server started!');
     initHack('csgo.exe', (e, l, i) => {
         res.push({
@@ -25,10 +26,15 @@ startWsServer((ws: WebSocket) => {
             isLocal: entityList.getPlayer(i).base === entityList.getLocalPlayer().base,
         });
     }, () => {
-        ws.send(JSON.stringify({
-            radar: res,
-            currentMap: clientState.resolver().dwClientState_Map(mT.string)
-        }));
+
+        wsConnections.map(ws => {
+            ws.send(JSON.stringify({
+                radar: res,
+                currentMap: clientState.resolver().dwClientState_Map(mT.string),
+                radarSize: radar.radarSize
+            }));
+        });
+
         res = [];
     });
 });

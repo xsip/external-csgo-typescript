@@ -2,18 +2,23 @@ interface Vec2 {
     x: number;
     y: number
 }
+
 interface RadarEntry {
     pos: Vec2;
     isLocal: boolean;
     team: number;
-};
+}
+
 interface Data {
     radar: RadarEntry[]
     currentMap: string;
+    radarSize: number;
 }
+
 class ExternalFrontend {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D | null;
+    radarSize: number = 0;
 
     constructor() {
 
@@ -26,10 +31,12 @@ class ExternalFrontend {
         this.canvas.style.border = '4px solid rgba(35,35,35,1)';
 
         this.createSocketConnection();
+
+
     }
 
     createSocketConnection() {
-        const url: string = 'ws://localhost:8080';
+        const url: string = 'ws://192.168.8.125:8080';
         const connection: WebSocket = new WebSocket(url);
         console.log('connecting..');
         connection.onopen = () => {
@@ -45,6 +52,10 @@ class ExternalFrontend {
 
         connection.onopen = () => {
             connection.send('frontend connected');
+            const button: HTMLInputElement = document.getElementById('changeRadarSize') as HTMLInputElement;
+            button.addEventListener('click', () => {
+                connection.send(JSON.stringify({radarSize: '' + (document.getElementById('radarSize') as HTMLInputElement).value}));
+            });
         };
         connection.onmessage = (e: MessageEvent) => {
             const d = JSON.parse(e.data);
@@ -53,25 +64,32 @@ class ExternalFrontend {
     }
 
     handleSocketMessage = (data: Data) => {
+
         const info = document.getElementById('info');
+
         if (info) {
             info.innerText = (data.currentMap);
 
         }
+
+        if (data.radarSize !== this.radarSize) {
+            this.updateRadarSize(data.radarSize);
+        }
+
         this.updateRadar(data.radar);
 
-    }
+    };
 
     drawPixel(x: number, y: number, r: number, g: number, b: number, a: number) {
         this.ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
-        this.ctx.fillRect(x - 5, y - 5, 10, 10);
+        this.ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
     }
 
     updateRadar(radarData: RadarEntry[]) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
         for (let key in radarData) {
-            if(radarData[key].isLocal) {
+            if (radarData[key].isLocal) {
                 this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
             } else {
                 if (radarData[key].team === 2) {
@@ -83,6 +101,13 @@ class ExternalFrontend {
 
 
         }
+    }
+
+    updateRadarSize(size: number) {
+        this.radarSize = size;
+        this.canvas.width = this.radarSize;
+        this.canvas.height = this.radarSize;
+        (document.getElementById('radarSize') as HTMLInputElement).value = '' + this.radarSize;
     }
 }
 

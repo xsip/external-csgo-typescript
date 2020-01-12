@@ -19,7 +19,11 @@ export const mT = EMemoryTypes;
 export let clientState: ClientState;
 export let entityList: EntityList;
 export let radar: Radar;
-
+export let wsConnections: any[] = [];
+export const removeFromWsConnections = (ws) => {
+    wsConnections = wsConnections.filter(w => w != ws);
+    console.log(wsConnections);
+}
 export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extendBy?: U): Resolver<T> => {
 
     let resolver: Resolver<typeof offsetList> & U = {
@@ -73,5 +77,5 @@ export const initHack = (processName: string, forEachPlayer: (enemy: EntityResol
 
     }, 0);
 
-    
+
 };

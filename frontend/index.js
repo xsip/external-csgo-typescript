@@ -1,12 +1,15 @@
 "use strict";
-;
 var ExternalFrontend = /** @class */ (function () {
     function ExternalFrontend() {
         var _this = this;
+        this.radarSize = 0;
         this.handleSocketMessage = function (data) {
             var info = document.getElementById('info');
             if (info) {
                 info.innerText = (data.currentMap);
+            }
+            if (data.radarSize !== _this.radarSize) {
+                _this.updateRadarSize(data.radarSize);
             }
             _this.updateRadar(data.radar);
         };
@@ -20,7 +23,7 @@ var ExternalFrontend = /** @class */ (function () {
     };
     ExternalFrontend.prototype.createSocketConnection = function () {
         var _this = this;
-        var url = 'ws://localhost:8080';
+        var url = 'ws://192.168.8.125:8080';
         var connection = new WebSocket(url);
         console.log('connecting..');
         connection.onopen = function () {
@@ -34,6 +37,10 @@ var ExternalFrontend = /** @class */ (function () {
         };
         connection.onopen = function () {
             connection.send('frontend connected');
+            var button = document.getElementById('changeRadarSize');
+            button.addEventListener('click', function () {
+                connection.send(JSON.stringify({ radarSize: '' + document.getElementById('radarSize').value }));
+            });
         };
         connection.onmessage = function (e) {
             var d = JSON.parse(e.data);
@@ -42,7 +49,7 @@ var ExternalFrontend = /** @class */ (function () {
     };
     ExternalFrontend.prototype.drawPixel = function (x, y, r, g, b, a) {
         this.ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-        this.ctx.fillRect(x - 5, y - 5, 10, 10);
+        this.ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
     };
     ExternalFrontend.prototype.updateRadar = function (radarData) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -60,6 +67,12 @@ var ExternalFrontend = /** @class */ (function () {
                 }
             }
         }
+    };
+    ExternalFrontend.prototype.updateRadarSize = function (size) {
+        this.radarSize = size;
+        this.canvas.width = this.radarSize;
+        this.canvas.height = this.radarSize;
+        document.getElementById('radarSize').value = '' + this.radarSize;
     };
     return ExternalFrontend;
 }());
