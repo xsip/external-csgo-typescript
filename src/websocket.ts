@@ -1,5 +1,5 @@
-import * as WebSocket from 'ws';
-const wss = new WebSocket.Server({ port: 8080 });
+import * as _WebSocket from 'ws';
+const wss = new _WebSocket.Server({ port: 8080 });
 
 
 
