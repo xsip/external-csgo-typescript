@@ -7,7 +7,7 @@
     <style>
         #myCanvas {
             border-radius: 210px;
-            background-color: rgba(235, 235, 235, 1);
+            background-color: rgba(235, 235, 235, 0.5);
         }
 
         body {
@@ -26,16 +26,30 @@
 <body>
 <canvas id="myCanvas"></canvas>
 <div id="info"></div>
-<section>
-<div class="container withborder">
-    <h2>Settings</h2>
-<div class="container">
-    <h4>Radarsize</h4>
-    <div class="form-inline">
-        <input id="radarSize" type="number" class="form-control mr-1">
-        <button id="changeRadarSize" class="btn btn-primary">enter</button>
+<section id="menu">
+    <div class="container withborder">
+        <h2>Settings</h2>
+        <div class="container">
+            <h4>Radarsize</h4>
+            <div class="form-inline">
+                <input id="radarSize" type="number" class="form-control mr-1">
+            </div>
+        </div>
+        <div class="container">
+            <h4>Left Position</h4>
+            <div class="form-inline">
+                <input id="x" type="number" class="form-control mr-1">
+
+            </div>
+        </div>
+        <div class="container">
+            <h4>Top position</h4>
+            <div class="form-inline">
+                <input id="y" type="number" class="form-control mr-1">
+            </div>
+            <button id="changeRadarSize" class="btn btn-primary">change</button>
+        </div>
     </div>
-</div>
-</div>
+</section>
 </body>
 </html>

@@ -2,8 +2,10 @@ import {clientState, entityList, mT} from "./global";
 import {EntityResolver} from "./entityList";
 
 export class Radar {
+    // always zero!! Canvas gets moved in the frontend
     radarPosition: { x: number; y: number } = {x: 0, y: 0};
-    radarSize: number = 200;
+    frontendRadarPosition: { x: number; y: number } = {x: 13, y: 50};
+    radarSize: number = 165;
 
     constructor() {
     }
@@ -67,5 +69,8 @@ export class Radar {
 
     setRadarSize(size: number) {
         this.radarSize = size;
+    }
+    setRadarPos(pos: {x: number; y: number;}) {
+        this.frontendRadarPosition = pos;
     }
 }

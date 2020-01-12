@@ -31,7 +31,8 @@ startWsServer(() => {
             ws.send(JSON.stringify({
                 radar: res,
                 currentMap: clientState.resolver().dwClientState_Map(mT.string),
-                radarSize: radar.radarSize
+                radarSize: radar.radarSize,
+                radarPos: radar.frontendRadarPosition
             }));
         });
 

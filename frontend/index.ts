@@ -13,12 +13,14 @@ interface Data {
     radar: RadarEntry[]
     currentMap: string;
     radarSize: number;
+    radarPos: Vec2;
 }
 
 class ExternalFrontend {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D | null;
     radarSize: number = 0;
+    radarPos: Vec2 = {x: -1, y: -1};
 
     constructor() {
 
@@ -54,7 +56,14 @@ class ExternalFrontend {
             connection.send('frontend connected');
             const button: HTMLInputElement = document.getElementById('changeRadarSize') as HTMLInputElement;
             button.addEventListener('click', () => {
-                connection.send(JSON.stringify({radarSize: '' + (document.getElementById('radarSize') as HTMLInputElement).value}));
+                connection.send(JSON.stringify({
+                    radarSize: '' + (document.getElementById('radarSize') as HTMLInputElement).value,
+                    radarPos: {
+                        x: (document.getElementById('x') as HTMLInputElement).value,
+                        y: (document.getElementById('y') as HTMLInputElement).value
+                    }
+
+                }));
             });
         };
         connection.onmessage = (e: MessageEvent) => {
@@ -75,7 +84,9 @@ class ExternalFrontend {
         if (data.radarSize !== this.radarSize) {
             this.updateRadarSize(data.radarSize);
         }
-
+        if (data.radarPos.x !== this.radarPos.x || data.radarPos.y !== this.radarPos.y) {
+            this.updateRadarPosition(data.radarPos);
+        }
         this.updateRadar(data.radar);
 
     };
@@ -108,6 +119,15 @@ class ExternalFrontend {
         this.canvas.width = this.radarSize;
         this.canvas.height = this.radarSize;
         (document.getElementById('radarSize') as HTMLInputElement).value = '' + this.radarSize;
+    }
+
+    updateRadarPosition(pos: Vec2) {
+        this.radarPos = pos;
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.left = pos.x + 'px';
+        this.canvas.style.top = pos.y + 'px';
+        (document.getElementById('x') as HTMLInputElement).value = '' + this.radarPos.x;
+        (document.getElementById('y') as HTMLInputElement).value = '' + this.radarPos.y;
     }
 }
 

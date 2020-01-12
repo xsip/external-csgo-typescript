@@ -8,6 +8,9 @@ const handleRequest = (request: any) => {
     if (request.radarSize) {
         radar.setRadarSize(request.radarSize);
     }
+    if (request.radarPos) {
+        radar.setRadarPos(request.radarPos);
+    }
 };
 
 export const startWsServer = (afterConnection: () => void) => {
