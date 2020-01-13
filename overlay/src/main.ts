@@ -2,7 +2,7 @@ import {app, BrowserWindow, ipcMain, globalShortcut} from 'electron';
 import {IRect, User32} from "./user32";
 
 let ignoreMouse: boolean = false;
-
+require('electron-reload')(__dirname);
 function createWindow() {
 
 

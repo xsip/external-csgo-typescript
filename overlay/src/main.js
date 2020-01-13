@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const electron_1 = require("electron");
-const user32_1 = require("./user32");
-let ignoreMouse = false;
+var electron_1 = require("electron");
+var user32_1 = require("./user32");
+var ignoreMouse = false;
+require('electron-reload')(__dirname);
 function createWindow() {
-    const user32 = new user32_1.User32();
-    const rect = user32.getWindowRect('Counter-Strike: Global Offensive');
-    const data = {
+    var user32 = new user32_1.User32();
+    var rect = user32.getWindowRect('Counter-Strike: Global Offensive');
+    var data = {
         left: rect.left,
         right: rect.right,
         top: rect.top,
@@ -16,7 +17,7 @@ function createWindow() {
     // win.setPosition(rect.left, rect.top, true);
     // win.setSize(rect.right - rect.left, rect.bottom -rect.top, true);
     // Erstelle das Browser-Fenster.
-    const opts = {
+    var opts = {
         transparent: true,
         frame: false,
         width: data.right - data.left,
@@ -33,7 +34,7 @@ function createWindow() {
             preload: __dirname + '/ipcrenderer.js',
         },
     };
-    let win = new electron_1.BrowserWindow(opts);
+    var win = new electron_1.BrowserWindow(opts);
     win.setIgnoreMouseEvents(ignoreMouse);
     win.webContents.send('ignoremouse', ignoreMouse);
     // und lade die index.html der App.
@@ -48,7 +49,7 @@ function createWindow() {
         win.webContents.send('ignoremouse', ignoreMouse)
     });*/
     win.loadFile('src/view/index.html');
-    electron_1.globalShortcut.register('insert', () => {
+    electron_1.globalShortcut.register('insert', function () {
         ignoreMouse = !ignoreMouse;
         win.setIgnoreMouseEvents(ignoreMouse);
         win.webContents.send('ignoremouse', ignoreMouse);
@@ -57,7 +58,7 @@ function createWindow() {
         left: data.left,
         top: data.top,
     });
-    setTimeout(() => {
+    setTimeout(function () {
         win.setPosition(parseInt('' + data.left, 0), parseInt('' + data.top, 0), true);
     }, 1000);
 }

@@ -1,3 +1,6 @@
+
+// import "./debug-info/debug.info.element";
+
 interface Vec2 {
     x: number;
     y: number
@@ -33,7 +36,10 @@ class ExternalFrontend {
         this.canvas.style.border = '4px solid rgba(35,35,35,1)';
 
         this.createSocketConnection();
-
+        const info = document.getElementById('info');
+        info.style.position = 'fixed';
+        info.style.left = '20px';
+        info.style.top = '30px';
 
     }
 
@@ -75,7 +81,6 @@ class ExternalFrontend {
     handleSocketMessage = (data: Data) => {
 
         const info = document.getElementById('info');
-
         if (info) {
             info.innerText = (data.currentMap);
 

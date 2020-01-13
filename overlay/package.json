@@ -4,6 +4,7 @@
   "description": "",
   "main": "./src/main.js",
   "scripts": {
+    "watch": "nodemon --exec \"electron  . --enable-logging\" && tsc -w",
     "start": "electron . --enable-logging",
     "build:main": "tsc",
     "setup": "cd node-ffi && node-gyp rebuild",
@@ -18,11 +19,13 @@
   "devDependencies": {
     "@types/node": "^10.9.2",
     "electron-rebuild": "^1.8.8",
+    "nodemon": "^2.0.2",
     "tslint": "^5.10.0",
     "typescript": "^3.1.0"
   },
   "dependencies": {
     "electron": "^7.1.8",
+    "electron-reload": "^1.5.0",
     "ffi-napi": "^2.4.5",
     "ref-napi": "^1.4.2",
     "ref-struct-napi": "^1.1.0"

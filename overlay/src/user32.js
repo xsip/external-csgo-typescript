@@ -10,10 +10,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ffi = __importStar(require("ffi-napi"));
-const ref = __importStar(require("ref-napi"));
-const ref_struct_napi_1 = __importDefault(require("ref-struct-napi"));
-const lpctstr = {
+var ffi = __importStar(require("ffi-napi"));
+var ref = __importStar(require("ref-napi"));
+var ref_struct_napi_1 = __importDefault(require("ref-struct-napi"));
+var lpctstr = {
     name: 'lpctstr',
     indirection: 1,
     size: ref.sizeof.pointer,
@@ -30,21 +30,22 @@ const lpctstr = {
     },
     ffi_type: ffi.types.CString.ffi_type
 };
-const lpdwordPtr = ref.refType(ref.types.ulong);
-const rectStruct = ref_struct_napi_1.default({
+var lpdwordPtr = ref.refType(ref.types.ulong);
+var rectStruct = ref_struct_napi_1.default({
     left: 'long',
     top: 'long',
     right: 'long',
     bottom: 'long',
 });
-const rectPtr = ref.refType(rectStruct);
-class User32 {
-    constructor() {
-        this.getWindowRect = (windowName) => {
-            const hwnd = this.user32.FindWindowW(null, windowName);
-            this.user32.SetForegroundWindow(hwnd);
-            const rec_struct = new rectStruct;
-            var Rect = this.user32.GetWindowRect(hwnd, rec_struct['ref.buffer']);
+var rectPtr = ref.refType(rectStruct);
+var User32 = /** @class */ (function () {
+    function User32() {
+        var _this = this;
+        this.getWindowRect = function (windowName) {
+            var hwnd = _this.user32.FindWindowW(null, windowName);
+            _this.user32.SetForegroundWindow(hwnd);
+            var rec_struct = new rectStruct;
+            var Rect = _this.user32.GetWindowRect(hwnd, rec_struct['ref.buffer']);
             return rec_struct;
         };
         this.user32 = ffi.Library('user32', {
@@ -55,6 +56,7 @@ class User32 {
             GetWindowRect: ['bool', ['long', rectPtr]]
         });
     }
-}
+    return User32;
+}());
 exports.User32 = User32;
 //# sourceMappingURL=user32.js.map
