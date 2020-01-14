@@ -4,6 +4,7 @@ import {Resolver} from "../typings/typings";
 import {ClientState} from "./clientState";
 import {Radar} from "./radar";
 import {EntityList, EntityResolver} from "./entityList";
+import {Aimbot} from "./aimbot";
 
 const notInitializedFunc = () => {
     throw Error('Globals not initialized!!');
@@ -17,13 +18,16 @@ export const mT = EMemoryTypes;
 
 
 export let clientState: ClientState;
+export let aimbot: Aimbot;
 export let entityList: EntityList;
 export let radar: Radar;
 export let wsConnections: any[] = [];
+
 export const removeFromWsConnections = (ws) => {
     wsConnections = wsConnections.filter(w => w != ws);
     console.log(wsConnections);
-}
+};
+
 export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extendBy?: U): Resolver<T> => {
 
     let resolver: Resolver<typeof offsetList> & U = {
@@ -55,7 +59,7 @@ export const initHack = (processName: string, forEachPlayer: (enemy: EntityResol
     clientState = new ClientState();
     entityList = new EntityList(clientState);
     radar = new Radar();
-
+    aimbot = new Aimbot();
     console.log('hack initialized..\nstarting main loop..');
     const main = setInterval(() => {
         // radar.readLocalPlayer();
