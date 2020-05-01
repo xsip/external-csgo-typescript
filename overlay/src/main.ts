@@ -6,13 +6,21 @@ const  createWindow = async () => {
 
 
     const user32: User32 = new User32();
-    const rect = user32.getWindowRect('Counter-Strike: Global Offensive');
-    const data = {
-        left: rect.left,
-        right: rect.right,
-        top: rect.top,
-        bottom: rect.bottom,
+    let data = {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
     };
+    while(data.left === 0 && data.top === 0) {
+        const rect = user32.getWindowRect('Counter-Strike: Global Offensive');
+        data = {
+            left: rect.left,
+            right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom,
+        };
+    }
     console.log(data);
     // win.setPosition(rect.left, rect.top, true);
     // win.setSize(rect.right - rect.left, rect.bottom -rect.top, true);

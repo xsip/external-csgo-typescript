@@ -41,18 +41,26 @@ var user32_1 = require("./user32");
 require('electron-reload')(__dirname);
 var ignoreMouse = false;
 var createWindow = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var user32, rect, data, opts, win;
+    var user32, data, rect, opts, win;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 user32 = new user32_1.User32();
-                rect = user32.getWindowRect('Counter-Strike: Global Offensive');
                 data = {
-                    left: rect.left,
-                    right: rect.right,
-                    top: rect.top,
-                    bottom: rect.bottom,
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
                 };
+                while (data.left === 0 && data.top === 0) {
+                    rect = user32.getWindowRect('Counter-Strike: Global Offensive');
+                    data = {
+                        left: rect.left,
+                        right: rect.right,
+                        top: rect.top,
+                        bottom: rect.bottom,
+                    };
+                }
                 console.log(data);
                 opts = {
                     transparent: true,
