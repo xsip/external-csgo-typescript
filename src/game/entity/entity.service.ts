@@ -1,10 +1,10 @@
 
-import {dumpedOffsets, MemoryTypesForNetvars} from "./offsets";
-import {gM, rpm, mT, rbf, createResolver} from "./global";
+import {dumpedOffsets, MemoryTypesForNetvars} from "../offsets";
+import {gM, rpm, mT, rbf, createResolver} from "../../shared/declerations";
 
-import {Resolver} from "../typings/typings";
-import {Vec3} from "./extended.math";
-import {Entity} from "./entity";
+import {Resolver} from "../../../typings/typings";
+import {Vec3} from "../../math/extendedMath.service";
+import {Entity} from "./entity.interfaces";
 
 interface EntityResolver extends Resolver<typeof dumpedOffsets.netvars> {
     base?: any;

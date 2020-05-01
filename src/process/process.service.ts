@@ -1,8 +1,8 @@
 import * as memoryJs from 'memoryJs';
 import {IModuleObject, IModuleListEntry, MemoryTypes, IProcessObject} from 'memoryJs';
-import {EMemoryTypes} from "./interfaces";
+import {EMemoryTypes} from "./process.interfaces";
 
-export class ProcessInstance implements IProcessObject {
+export class ProcessService implements IProcessObject {
 
     dwSize: number;
     th32ProcessID: number;

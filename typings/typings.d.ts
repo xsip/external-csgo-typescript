@@ -1,4 +1,4 @@
-import {dumpedOffsets} from "../src/offsets";
+import {dumpedOffsets} from "../src/game/offsets";
 
 declare interface IProcessListEntry {
     cntThreads: number,

@@ -1,59 +1,46 @@
-import {aimbot,  hackBase, radar, wsConnections} from './global';
-import {onWebsocketConnection} from './websocket';
+import {clientState, hackBase, radar} from './shared/declerations';
 
-import {Vec3} from './extended.math';
 import * as fs from 'fs';
 import {readBspFile} from './bspparser/bsp-parser';
-import {Entity} from './entity';
-import {ClientState} from "./clientState";
+import {Entity} from './game/entity/entity.interfaces';
+import {SocketService} from "./network/socket/socket.service";
 
-
-interface Vec2 {
-    x: number;
-    y: number
-}
-
-interface Data {
-    radar: {
-        pos: Vec2;
-        isLocal: boolean;
-        team: number;
-    };
-    currentMap: string;
-}
 
 let radarEntries = [];
 let espEntries = [];
-let currentMap: string;
-const bspFile = readBspFile(fs.readFileSync("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\maps\\de_dust2.bsp"));
 
-onWebsocketConnection(() => {
+const bspFile = readBspFile(fs.readFileSync("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\csgo\\maps\\de_dust2.bsp"));
+const socket: SocketService = new SocketService();
+
+
+
+const run = () => {
     console.log('WS Server started!');
-    hackBase((entity: Entity, localEntity: Entity, localViewAngles:Vec3, entityLoopIndex: number, clientState: ClientState) => {
+    hackBase((entity: Entity, localEntity: Entity, entityLoopIndex: number) => {
         radarEntries.push({
-            pos: radar.calculateRadarPositionForEntity(entity, localEntity, localViewAngles),
+            pos: radar.calculateRadarPositionForEntity(entity, localEntity, clientState.viewAngles),
             team: entity.team,
             isLocal: entityLoopIndex === clientState.localEntityIndex
         });
-
+        /*
         espEntries.push({
-            pos: radar.w2s2(entity.headBoneOrigin),
+            pos: ExtendedMath.worldToScreen(entity.headBoneOrigin, renderer.viewMatrix),
             team: entity.team,
             isLocal: entityLoopIndex === clientState.localEntityIndex
         });
 
         if (entity.team !== localEntity.team) {
-            aimbot.playerIsInFov(entity, localEntity,localViewAngles, (aimAngle: Vec3) => {
+            aimbot.playerIsInFov(entity, localEntity, clientState.viewAngles, (aimAngle: Vec3) => {
                 if (entity.health > 0 && entity.health <= 100) {
                     let mouseClicked = true;
                     if (mouseClicked) {
-                        localViewAngles = aimAngle;
+                        clientState.viewAngles = aimAngle;
                     }
                 }
             })
-        }
-    }, (clientState: ClientState) => {
-        wsConnections.map(ws => {
+        }*/
+    }, () => {
+        socket.connections.map(ws => {
             ws.send(JSON.stringify({
                 radar: radarEntries,
                 esp: espEntries,
@@ -65,4 +52,6 @@ onWebsocketConnection(() => {
         radarEntries = [];
         espEntries = [];
     });
-});
+};
+
+socket.startServer(run);

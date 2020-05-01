@@ -1,9 +1,9 @@
-import {createResolver, gM, mT, rpm} from "./global";
-import {dumpedOffsets, TypesForSignatures} from "./offsets";
-import {Resolver} from "../typings/typings";
-import {Vec3} from "./extended.math";
+import {createResolver, gM, mT, rpm} from "../../shared/declerations";
+import {dumpedOffsets, TypesForSignatures} from "../offsets";
+import {Resolver} from "../../../typings/typings";
+import {Vec3} from "../../math/extendedMath.service";
 
-export class ClientState {
+export class ClientStateService {
 
     public set viewAngles(angles: Vec3) {
         this.resolver().set.dwClientState_ViewAngles(angles);

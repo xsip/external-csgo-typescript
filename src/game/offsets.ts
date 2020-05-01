@@ -1,4 +1,4 @@
-import {EMemoryTypes} from "./interfaces";
+import {EMemoryTypes} from "../process/process.interfaces";
 
 export const dumpedOffsets = {
     "timestamp": 1587108956,

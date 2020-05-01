@@ -1,7 +1,7 @@
-import {ExtendedMath, Vec3} from "./extended.math";
-import {Entity} from "./entity";
+import {ExtendedMath, Vec3} from "../math/extendedMath.service";
+import {Entity} from "../game/entity/entity.interfaces";
 
-export class Aimbot {
+export class AimbotService {
     config: {
         fov: number;
     } = {fov: 10};

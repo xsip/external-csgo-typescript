@@ -55,4 +55,31 @@ export class ExtendedMath {
 
         return Math.sqrt(Math.pow(pitch, 2.0) + Math.pow(yaw, 2.0));
     }
+
+    public static worldToScreen(from: Vec3, viewMatrix: number[], width: number = 1280, height: number = 720): Vec2 {
+        let w: number;
+        const ret: Vec2 = {} as Vec2;
+
+        ret.x = viewMatrix[0] * from.x + viewMatrix[1] * from.y + viewMatrix[2] * from.z + viewMatrix[3];
+        ret.y = viewMatrix[4] * from.x + viewMatrix[5] * from.y + viewMatrix[6] * from.z + viewMatrix[7];
+        w = viewMatrix[12] * from.x + viewMatrix[13] * from.y + viewMatrix[14] * from.z + viewMatrix[15];
+        if (w < 0.01) {
+            return {x: 0, y: 0};
+        }
+
+        let invw: number = 1.0 / w;
+
+        ret.x *= invw;
+        ret.y *= invw;
+
+        let x: number = width / 2;
+        let y: number = height / 2;
+
+        x += 0.5 * ret.x * width + 0.5;
+        y -= 0.5 * ret.y * height + 0.5;
+
+        ret.x = x;
+        ret.y = y;
+        return ret;
+    }
 }

@@ -1,4 +1,4 @@
-import {Vec3} from "./extended.math";
+import {Vec3} from "../../math/extendedMath.service";
 
 export interface Entity {
     health: number;

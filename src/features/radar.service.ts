@@ -1,9 +1,9 @@
-import {gM, rbf} from "./global";
-import {dumpedOffsets} from "./offsets";
-import {ExtendedMath, Vec3, Vec2} from "./extended.math";
-import {Entity} from "./entity";
+import {gM, rbf} from "../shared/declerations";
+import {dumpedOffsets} from "../game/offsets";
+import {ExtendedMath, Vec3, Vec2} from "../math/extendedMath.service";
+import {Entity} from "../game/entity/entity.interfaces";
 
-export class Radar {
+export class RadarService {
     // always zero!! Canvas gets moved in the frontend
     radarPosition: { x: number; y: number } = {x: 0, y: 0};
     frontendRadarPosition: { x: number; y: number } = {x: 13, y: 50};
@@ -56,7 +56,7 @@ export class Radar {
 
     viewMatrix: any[] = [];
 
-    getViewMatrix2() {
+    getViewMatrix() {
         const viewMatOffset = gM('client_panorama.dll').modBaseAddr + dumpedOffsets.signatures.dwViewMatrix;
         const matBuffer: Buffer = rbf(viewMatOffset, 64);
 
@@ -65,32 +65,4 @@ export class Radar {
         }
     }
 
-
-    w2s2(from: Vec3, width: number = 1280, height: number = 720) {
-        this.getViewMatrix2();
-        let w: number;
-        const ret: Vec2 = {} as Vec2;
-
-        ret.x = this.viewMatrix[0] * from.x + this.viewMatrix[1] * from.y + this.viewMatrix[2] * from.z + this.viewMatrix[3];
-        ret.y = this.viewMatrix[4] * from.x + this.viewMatrix[5] * from.y + this.viewMatrix[6] * from.z + this.viewMatrix[7];
-        w = this.viewMatrix[12] * from.x + this.viewMatrix[13] * from.y + this.viewMatrix[14] * from.z + this.viewMatrix[15];
-        if (w < 0.01) {
-            return {x: 0, y: 0};
-        }
-
-        let invw: number = 1.0 / w;
-
-        ret.x *= invw;
-        ret.y *= invw;
-
-        let x: number = width / 2;
-        let y: number = height / 2;
-
-        x += 0.5 * ret.x * width + 0.5;
-        y -= 0.5 * ret.y * height + 0.5;
-
-        ret.x = x;
-        ret.y = y;
-        return ret;
-    }
 }
