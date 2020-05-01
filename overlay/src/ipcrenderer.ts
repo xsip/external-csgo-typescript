@@ -1,5 +1,4 @@
 const {ipcRenderer} = require('electron');
-// ipcRenderer.sendSync('test', 'HALLO');
 
 window.onfocus = function() {
     console.log("focus")

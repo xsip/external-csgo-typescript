@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain, globalShortcut} from 'electron';
+import {app, BrowserWindow, globalShortcut} from 'electron';
 import {IRect, User32} from "./user32";
 require('electron-reload')(__dirname);
 let ignoreMouse: boolean = false;
@@ -22,17 +22,11 @@ const  createWindow = async () => {
         };
     }
     console.log(data);
-    // win.setPosition(rect.left, rect.top, true);
-    // win.setSize(rect.right - rect.left, rect.bottom -rect.top, true);
-
-    // Erstelle das Browser-Fenster.
     const opts = {
         transparent: true,
         frame: false,
         width: data.right - data.left,
         height: data.bottom - data.top,
-        // x: rect.left,
-        // y: rect.top,
         backgroundColor: "#00ffffff",
         hasShadow: false,
         alwaysOnTop: true,
@@ -47,19 +41,6 @@ const  createWindow = async () => {
     let win = new BrowserWindow(opts as any);
     win.setIgnoreMouseEvents(ignoreMouse);
     win.webContents.send('ignoremouse', ignoreMouse);
-
-    // und lade die index.html der App.
-
-    // win.loadURL('http://192.168.8.125:8081/');
-    /*ipcMain.on('keydown', function (event, arg) {
-        // console.log('GOT TEST MESSAGE!');
-
-        if (arg === 45) {
-            ignoreMouse = !ignoreMouse;
-            win.setIgnoreMouseEvents(ignoreMouse);
-        }
-        win.webContents.send('ignoremouse', ignoreMouse)
-    });*/
     await win.loadFile('src/view/index.html');
 
     globalShortcut.register('insert', () => {
@@ -77,7 +58,5 @@ const  createWindow = async () => {
     }, 2000);
 
 }
-// setTimeout(() => {
     app.on('ready', createWindow);
-// },2000);
 
