@@ -3,8 +3,11 @@ import {ProcessInstance} from "./process.instance";
 import {Resolver} from "../typings/typings";
 import {ClientState} from "./clientState";
 import {Radar} from "./radar";
-import {EntityList, EntityResolver} from "./entityList";
+import {EntityList} from "./entityList";
 import {Aimbot} from "./aimbot";
+import {Entity} from "./entity";
+import {Vec3} from "./extended.math";
+
 
 const notInitializedFunc = () => {
     throw Error('Globals not initialized!!');
@@ -13,13 +16,15 @@ const notInitializedFunc = () => {
 export let proc: ProcessInstance;
 export let gM: typeof ProcessInstance.prototype.getModule = notInitializedFunc;
 export let rpm: typeof ProcessInstance.prototype.readMemory = notInitializedFunc;
+export let rbf: typeof ProcessInstance.prototype.readBuffer = notInitializedFunc;
 export let wpm: typeof ProcessInstance.prototype.writeMemory = notInitializedFunc;
 export const mT = EMemoryTypes;
 
 
-export let clientState: ClientState;
+let clientState: ClientState;
+let entityList: EntityList;
+
 export let aimbot: Aimbot;
-export let entityList: EntityList;
 export let radar: Radar;
 export let wsConnections: any[] = [];
 
@@ -28,7 +33,7 @@ export const removeFromWsConnections = (ws) => {
     console.log(wsConnections);
 };
 
-export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extendBy?: U): Resolver<T> => {
+export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, typesForSignatures?: {[index: string]: EMemoryTypes}, extendBy?: U,): Resolver<T> => {
 
     let resolver: Resolver<typeof offsetList> & U = {
         base: baseOffset,
@@ -37,11 +42,11 @@ export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extend
     } as Resolver<typeof offsetList> & U;
 
     for (let k in offsetList as Object) {
-        resolver[k] = (type: EMemoryTypes) => {
-            return rpm(resolver.base + offsetList[k], type);
+        resolver[k] = (type?: EMemoryTypes) => {
+            return rpm(resolver.base + offsetList[k],type ? type : typesForSignatures[k]);
         };
-        resolver.set[k] = (value: any, type: EMemoryTypes) => {
-            wpm(resolver.base + offsetList[k], value, type);
+        resolver.set[k] = (value: any, type?: EMemoryTypes) => {
+            wpm(resolver.base + offsetList[k], value,  type ? type : typesForSignatures[k]);
         }
     }
 
@@ -49,35 +54,38 @@ export const createResolver = <T, U = {}>(baseOffset: any, offsetList: T, extend
 
 };
 process.title = 'External Cs go!';
-export const initHack = (processName: string, forEachPlayer: (enemy: EntityResolver, localPlayer: EntityResolver, i?: number) => void, afterLoop: () => void) => {
+export const hackBase = ( forEachPlayer: (enemy: Entity, localPlayer: Entity, localViewAngles: Vec3, entityIndex: number, clientState: ClientState) => void, afterLoop: (clientState: ClientState) => void,) => {
 
-    proc = new ProcessInstance(processName);
+    proc = new ProcessInstance('csgo.exe');
     gM = proc.getModule.bind(proc);
     rpm = proc.readMemory.bind(proc);
+    rbf = proc.readBuffer.bind(proc);
     wpm = proc.writeMemory.bind(proc);
 
     clientState = new ClientState();
-    entityList = new EntityList(clientState);
+    entityList = new EntityList();
     radar = new Radar();
     aimbot = new Aimbot();
     console.log('hack initialized..\nstarting main loop..');
+
+    clientState.update();
+    entityList.update(clientState.localEntityIndex);
+
     const main = setInterval(() => {
-        // radar.readLocalPlayer();
-        const localPlayer: EntityResolver = entityList.getLocalPlayer();
-        radar.updateLocalPlayer(localPlayer);
-        const maxPlayer: number = clientState.resolver().dwClientState_MaxPlayer(mT.int);
+        const localEntity: Entity = entityList.entity(clientState.localEntityIndex);
 
-        for (let i = 0; i < maxPlayer; i++) {
-
-            const entity = entityList.getPlayer(i);
-            if (entity && /*entity.m_iHealth(mT.int) > 1 &&*/ entity.m_lifeState(mT.int) === 0) {
-                let enemyTeam: number = entity.m_iTeamNum(mT.int);
-                if ((enemyTeam === 2 || enemyTeam === 3) /*&& enemyTeam !== localPlayer.m_iTeamNum(mT.int)*/) {
-                    forEachPlayer(entity, localPlayer, i);
+        for (let i = 0; i < clientState.maxEntitys; i++) {
+            entityList.update(i);
+            const entity = entityList.entity(i);
+            if (entity && /*entity.m_iHealth(mT.int) > 1 &&*/ entity.lifeState === 0) {
+                if ((entity.team === 2 || entity.team === 3) /*&& enemyTeam !== localEntity.m_iTeamNum(mT.int)*/) {
+                    forEachPlayer(entity, localEntity, clientState.viewAngles, i, clientState);
                 }
             }
         }
-        afterLoop();
+        entityList.update(clientState.localEntityIndex);
+        clientState.update();
+        afterLoop(clientState);
 
     }, 0);
 

@@ -16,18 +16,31 @@ var ExternalFrontend = /** @class */ (function () {
                 _this.updateRadarPosition(data.radarPos);
             }
             _this.updateRadar(data.radar);
+            _this.updateEsp(data.esp);
         };
     }
     ExternalFrontend.prototype.bootstrap = function () {
-        this.canvas = document.getElementById("myCanvas");
-        this.ctx = this.canvas.getContext("2d");
-        this.ctx.fillStyle = "#FF0000";
-        this.canvas.style.border = '4px solid rgba(35,35,35,1)';
+        this.setupRadarCanvas();
+        this.setupEspCanvas();
         this.createSocketConnection();
         var info = document.getElementById('info');
         info.style.position = 'fixed';
         info.style.left = '20px';
         info.style.top = '30px';
+    };
+    ExternalFrontend.prototype.setupRadarCanvas = function () {
+        this.radarCanvas = document.getElementById("radarCanvas");
+        this.radarCtx = this.radarCanvas.getContext("2d");
+        this.radarCtx.fillStyle = "#FF0000";
+        this.radarCanvas.style.border = '4px solid rgba(35,35,35,1)';
+    };
+    ExternalFrontend.prototype.setupEspCanvas = function () {
+        this.espCanvas = document.getElementById("espCanvas");
+        this.espCtx = this.espCanvas.getContext("2d");
+        this.espCanvas.style.width = '100%';
+        this.espCanvas.style.height = '100%';
+        this.espCanvas.style.border = '4px solid rgba(35,35,35,1)';
+        this.espCtx.fillStyle = "#FF0000";
     };
     ExternalFrontend.prototype.createSocketConnection = function () {
         var _this = this;
@@ -61,38 +74,65 @@ var ExternalFrontend = /** @class */ (function () {
             _this.handleSocketMessage(d);
         };
     };
-    ExternalFrontend.prototype.drawPixel = function (x, y, r, g, b, a) {
-        this.ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-        this.ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
+    ExternalFrontend.prototype.drawRadarPoint = function (x, y, r, g, b, a) {
+        this.radarCtx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")";
+        this.radarCtx.fillRect(x - 2.5, y - 2.5, 5, 5);
+    };
+    ExternalFrontend.prototype.drawExpBox = function (x, y, r, g, b, a) {
+        this.espCtx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")";
+        this.espCtx.fillRect(x, y, 5, 5);
     };
     ExternalFrontend.prototype.updateRadar = function (radarData) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
+        this.radarCtx.clearRect(0, 0, this.radarCanvas.width, this.radarCanvas.height);
         for (var key in radarData) {
             if (radarData[key].isLocal) {
-                this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
+                this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
             }
             else {
                 if (radarData[key].team === 2) {
-                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
+                    this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
                 }
                 else if (radarData[key].team === 3) {
-                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
+                    this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
+                }
+            }
+        }
+    };
+    ExternalFrontend.prototype.posIsOnScreen = function (pos, width, height) {
+        if (width === void 0) { width = 1280; }
+        if (height === void 0) { height = 720; }
+        return pos.x !== 0 && pos.y !== 0 && pos.x > 0 && pos.y > 0 && pos.x <= width && pos.y <= height;
+    };
+    ExternalFrontend.prototype.updateEsp = function (espData) {
+        this.espCtx.clearRect(0, 0, this.espCanvas.width, this.espCanvas.height);
+        for (var key in espData) {
+            if (this.posIsOnScreen(espData[key].pos)) {
+                // console.log(`${espData[key].pos.x} & ${espData[key].pos.y}`);
+                if (espData[key].isLocal) {
+                    // this.drawRadarPoint(espData[key].pos.x, espData[key].pos.y, 0, 255, 0, 255);
+                }
+                else {
+                    if (espData[key].team === 2) {
+                        this.drawExpBox(espData[key].pos.x, espData[key].pos.y, 255, 0, 0, 255);
+                    }
+                    else if (espData[key].team === 3) {
+                        this.drawExpBox(espData[key].pos.x, espData[key].pos.y, 0, 0, 255, 255);
+                    }
                 }
             }
         }
     };
     ExternalFrontend.prototype.updateRadarSize = function (size) {
         this.radarSize = size;
-        this.canvas.width = this.radarSize;
-        this.canvas.height = this.radarSize;
+        this.radarCanvas.width = this.radarSize;
+        this.radarCanvas.height = this.radarSize;
         document.getElementById('radarSize').value = '' + this.radarSize;
     };
     ExternalFrontend.prototype.updateRadarPosition = function (pos) {
         this.radarPos = pos;
-        this.canvas.style.position = 'fixed';
-        this.canvas.style.left = pos.x + 'px';
-        this.canvas.style.top = pos.y + 'px';
+        this.radarCanvas.style.position = 'fixed';
+        this.radarCanvas.style.left = pos.x + 'px';
+        this.radarCanvas.style.top = pos.y + 'px';
         document.getElementById('x').value = '' + this.radarPos.x;
         document.getElementById('y').value = '' + this.radarPos.y;
     };

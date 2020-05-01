@@ -45,6 +45,9 @@ export class ProcessInstance implements IProcessObject {
         return memoryJs.readMemory(this.handle, addr, type);
     }
 
+    readMatrix(addr: any, type: EMemoryTypes) {
+        return memoryJs.readMemory(this.handle, addr, type);
+    }
     writeMemory(addr: any, value, type: EMemoryTypes, handle?: IModuleListEntry) {
         return memoryJs.writeMemory(this.handle, addr, value, type);
     }

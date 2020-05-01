@@ -1,5 +1,7 @@
-import {clientState, entityList, mT} from "./global";
-import {EntityResolver} from "./entityList";
+import {gM, rbf} from "./global";
+import {dumpedOffsets} from "./offsets";
+import {ExtendedMath, Vec3, Vec2} from "./extended.math";
+import {Entity} from "./entity";
 
 export class Radar {
     // always zero!! Canvas gets moved in the frontend
@@ -10,38 +12,15 @@ export class Radar {
     constructor() {
     }
 
-    DEG2RAD(degrees: number) {
-        return degrees * (Math.PI / 180);
-    }
+    calculateRadarPositionForEntity(entity: Entity, localEntity: Entity, viewAngles: Vec3): Vec2 {
 
-    localPlayer;
-    localPlayerPos;
-    localAngels;
+        const direction: Vec3 = {x: 0, y: 0, z: 0};
+        direction.x = -(entity.origin.y - localEntity.origin.y);
+        direction.y = entity.origin.x - localEntity.origin.x;
 
-    readLocalPlayer() {
-        this.localPlayer = entityList.getLocalPlayer();
-        this.localPlayerPos = this.localPlayer.m_vecOrigin(mT.vector3);
-        this.localAngels = this.localPlayer.m_angEyeAnglesX(mT.vector3);
-    }
-    updateLocalPlayer(lp: EntityResolver) {
-        this.localPlayer = lp;
-        this.localPlayerPos = this.localPlayer.m_vecOrigin(mT.vector3);
-        this.localAngels = clientState.resolver().dwClientState_ViewAngles(mT.vector3); // this.localPlayer.m_angEyeAnglesX(mT.vector3);
-    }
-    calculateRadarPosition(playerNo: number): { x?: number; y?: number } {
+        const radian = ExtendedMath.DEG2RAD(viewAngles.y - 90.0);
 
-        const localAngels = this.localAngels;
-        const localPlayerPos = this.localPlayerPos;
-        const player = entityList.getPlayer(playerNo);
-        const playerPos = player.m_vecOrigin(mT.vector3);
-
-        const direction: { x?: number; y?: number; z?: number } = {};
-        direction.x = -(playerPos.y - localPlayerPos.y);
-        direction.y = playerPos.x - localPlayerPos.x;
-
-        const radian = this.DEG2RAD(localAngels.y - 90.0);
-
-        const dotPos: { x?: number; y?: number } = {};
+        const dotPos: Vec2 = {x: 0, y: 0};
 
         dotPos.x = (direction.y * Math.cos(radian) - direction.x * Math.sin(radian)) / 20.0;
         dotPos.y = (direction.y * Math.sin(radian) + direction.x * Math.cos(radian)) / 20.0;
@@ -70,7 +49,48 @@ export class Radar {
     setRadarSize(size: number) {
         this.radarSize = size;
     }
-    setRadarPos(pos: {x: number; y: number;}) {
+
+    setRadarPos(pos: { x: number; y: number; }) {
         this.frontendRadarPosition = pos;
+    }
+
+    viewMatrix: any[] = [];
+
+    getViewMatrix2() {
+        const viewMatOffset = gM('client_panorama.dll').modBaseAddr + dumpedOffsets.signatures.dwViewMatrix;
+        const matBuffer: Buffer = rbf(viewMatOffset, 64);
+
+        for (let i = 0; i < 16; i++) {
+            this.viewMatrix[i] = matBuffer.readFloatLE(i * 0x4);
+        }
+    }
+
+
+    w2s2(from: Vec3, width: number = 1280, height: number = 720) {
+        this.getViewMatrix2();
+        let w: number;
+        const ret: Vec2 = {} as Vec2;
+
+        ret.x = this.viewMatrix[0] * from.x + this.viewMatrix[1] * from.y + this.viewMatrix[2] * from.z + this.viewMatrix[3];
+        ret.y = this.viewMatrix[4] * from.x + this.viewMatrix[5] * from.y + this.viewMatrix[6] * from.z + this.viewMatrix[7];
+        w = this.viewMatrix[12] * from.x + this.viewMatrix[13] * from.y + this.viewMatrix[14] * from.z + this.viewMatrix[15];
+        if (w < 0.01) {
+            return {x: 0, y: 0};
+        }
+
+        let invw: number = 1.0 / w;
+
+        ret.x *= invw;
+        ret.y *= invw;
+
+        let x: number = width / 2;
+        let y: number = height / 2;
+
+        x += 0.5 * ret.x * width + 0.5;
+        y -= 0.5 * ret.y * height + 0.5;
+
+        ret.x = x;
+        ret.y = y;
+        return ret;
     }
 }

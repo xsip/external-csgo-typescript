@@ -27,7 +27,7 @@ class ExternalFrontend {
     }
 
     bootstrap() {
-        this.canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+        this.canvas = document.getElementById("radarCanvas") as HTMLCanvasElement;
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = "#FF0000";
         this.canvas.style.border = '4px solid rgba(35,35,35,1)';
@@ -98,7 +98,7 @@ class ExternalFrontend {
 
     updateRadar(radarData: RadarEntry[]) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
+        // this.drawRadarPoint(100 - 5, 100 - 5, 0, 255, 0, 255);
         for (let key in radarData) {
             if (radarData[key].isLocal) {
                 this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);

@@ -93,9 +93,9 @@ declare module 'memoryJs' {
 }
 
 type Resolver<T> = {
-    [Key in  keyof T]?: (type: EMemoryTypes) => any;
+    [Key in  keyof T]?: (type?: EMemoryTypes) => any;
     } & { base?: any; } & {
     set?: {
-        [Key in  keyof T]?: (value: any, type: EMemoryTypes) => void;
+        [Key in  keyof T]?: (value: any, type?: EMemoryTypes) => void;
         }
 };

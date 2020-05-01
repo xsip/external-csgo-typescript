@@ -1,4 +1,3 @@
-
 // import "./debug-info/debug.info.element";
 
 interface Vec2 {
@@ -6,22 +5,26 @@ interface Vec2 {
     y: number
 }
 
-interface RadarEntry {
+interface RenderData {
     pos: Vec2;
     isLocal: boolean;
     team: number;
 }
 
 interface Data {
-    radar: RadarEntry[]
+    radar: RenderData[]
+    esp: RenderData[];
     currentMap: string;
     radarSize: number;
     radarPos: Vec2;
 }
 
 class ExternalFrontend {
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D | null;
+    radarCanvas: HTMLCanvasElement;
+    radarCtx: CanvasRenderingContext2D | null;
+
+    espCanvas: HTMLCanvasElement;
+    espCtx: CanvasRenderingContext2D | null;
     radarSize: number = 0;
     radarPos: Vec2 = {x: -1, y: -1};
 
@@ -30,16 +33,34 @@ class ExternalFrontend {
     }
 
     bootstrap() {
-        this.canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-        this.ctx = this.canvas.getContext("2d");
-        this.ctx.fillStyle = "#FF0000";
-        this.canvas.style.border = '4px solid rgba(35,35,35,1)';
+
+        this.setupRadarCanvas();
+        this.setupEspCanvas();
 
         this.createSocketConnection();
+
         const info = document.getElementById('info');
         info.style.position = 'fixed';
         info.style.left = '20px';
         info.style.top = '30px';
+
+    }
+
+    setupRadarCanvas() {
+        this.radarCanvas = document.getElementById("radarCanvas") as HTMLCanvasElement;
+        this.radarCtx = this.radarCanvas.getContext("2d");
+        this.radarCtx.fillStyle = "#FF0000";
+        this.radarCanvas.style.border = '4px solid rgba(35,35,35,1)';
+    }
+
+    setupEspCanvas() {
+        this.espCanvas = document.getElementById("espCanvas") as HTMLCanvasElement;
+        this.espCtx = this.espCanvas.getContext("2d");
+        this.espCanvas.style.width = '100%';
+        this.espCanvas.style.height = '100%';
+        this.espCanvas.style.border = '4px solid rgba(35,35,35,1)';
+        this.espCtx.fillStyle = "#FF0000";
+
 
     }
 
@@ -92,26 +113,33 @@ class ExternalFrontend {
         if (data.radarPos.x !== this.radarPos.x || data.radarPos.y !== this.radarPos.y) {
             this.updateRadarPosition(data.radarPos);
         }
+
         this.updateRadar(data.radar);
+
+        this.updateEsp(data.esp);
 
     };
 
-    drawPixel(x: number, y: number, r: number, g: number, b: number, a: number) {
-        this.ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
-        this.ctx.fillRect(x - 2.5, y - 2.5, 5, 5);
+    drawRadarPoint(x: number, y: number, r: number, g: number, b: number, a: number) {
+        this.radarCtx.fillStyle = `rgba(${r},${g},${b},${a})`;
+        this.radarCtx.fillRect(x - 2.5, y - 2.5, 5, 5);
     }
 
-    updateRadar(radarData: RadarEntry[]) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawPixel(100 - 5, 100 - 5, 0, 255, 0, 255);
+    drawExpBox(x: number, y: number, r: number, g: number, b: number, a: number) {
+        this.espCtx.fillStyle = `rgba(${r},${g},${b},${a})`;
+        this.espCtx.fillRect(x, y, 5, 5);
+    }
+
+    updateRadar(radarData: RenderData[]) {
+        this.radarCtx.clearRect(0, 0, this.radarCanvas.width, this.radarCanvas.height);
         for (let key in radarData) {
             if (radarData[key].isLocal) {
-                this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
+                this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 0, 255, 0, 255);
             } else {
                 if (radarData[key].team === 2) {
-                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
+                    this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 255, 0, 0, 255);
                 } else if (radarData[key].team === 3) {
-                    this.drawPixel(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
+                    this.drawRadarPoint(radarData[key].pos.x, radarData[key].pos.y, 0, 0, 255, 255);
                 }
             }
 
@@ -119,18 +147,42 @@ class ExternalFrontend {
         }
     }
 
+    posIsOnScreen(pos: Vec2, width = 1280, height = 720) {
+        return pos.x !== 0 && pos.y !== 0 && pos.x > 0 && pos.y > 0 && pos.x <= width && pos.y <= height;
+    }
+    updateEsp(espData: RenderData[]) {
+        this.espCtx.clearRect(0, 0,this.espCanvas.width,this.espCanvas.height);
+        for (let key in espData) {
+            if (this.posIsOnScreen(espData[key].pos)) {
+                // console.log(`${espData[key].pos.x} & ${espData[key].pos.y}`);
+
+
+            if (espData[key].isLocal) {
+                // this.drawRadarPoint(espData[key].pos.x, espData[key].pos.y, 0, 255, 0, 255);
+            } else {
+                if (espData[key].team === 2) {
+                    this.drawExpBox(espData[key].pos.x, espData[key].pos.y, 255, 0, 0, 255);
+                } else if (espData[key].team === 3) {
+                    this.drawExpBox(espData[key].pos.x, espData[key].pos.y, 0, 0, 255, 255);
+                }
+            }
+
+            }
+        }
+    }
+
     updateRadarSize(size: number) {
         this.radarSize = size;
-        this.canvas.width = this.radarSize;
-        this.canvas.height = this.radarSize;
+        this.radarCanvas.width = this.radarSize;
+        this.radarCanvas.height = this.radarSize;
         (document.getElementById('radarSize') as HTMLInputElement).value = '' + this.radarSize;
     }
 
     updateRadarPosition(pos: Vec2) {
         this.radarPos = pos;
-        this.canvas.style.position = 'fixed';
-        this.canvas.style.left = pos.x + 'px';
-        this.canvas.style.top = pos.y + 'px';
+        this.radarCanvas.style.position = 'fixed';
+        this.radarCanvas.style.left = pos.x + 'px';
+        this.radarCanvas.style.top = pos.y + 'px';
         (document.getElementById('x') as HTMLInputElement).value = '' + this.radarPos.x;
         (document.getElementById('y') as HTMLInputElement).value = '' + this.radarPos.y;
     }

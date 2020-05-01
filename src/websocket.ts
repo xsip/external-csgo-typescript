@@ -13,7 +13,7 @@ const handleRequest = (request: any) => {
     }
 };
 
-export const startWsServer = (afterConnection: () => void) => {
+export const onWebsocketConnection = (afterConnection: () => void) => {
 
     wss.on('connection', ws => {
 

@@ -13,4 +13,10 @@ window.onkeydown = function (e) {
 ipcRenderer.on('ignoremouse', function (e, a) {
     document.getElementById('menu').style.display = a ? 'none' : 'block';
 });
+ipcRenderer.on('resolution', function (e, d) {
+    var esp = document.getElementById('espCanvas');
+    esp.width = d.w;
+    esp.height = d.h;
+    console.log(d);
+});
 //# sourceMappingURL=ipcrenderer.js.map

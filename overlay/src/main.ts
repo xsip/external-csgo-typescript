@@ -1,9 +1,8 @@
 import {app, BrowserWindow, ipcMain, globalShortcut} from 'electron';
 import {IRect, User32} from "./user32";
-
-let ignoreMouse: boolean = false;
 require('electron-reload')(__dirname);
-function createWindow() {
+let ignoreMouse: boolean = false;
+const  createWindow = async () => {
 
 
     const user32: User32 = new User32();
@@ -53,7 +52,7 @@ function createWindow() {
         }
         win.webContents.send('ignoremouse', ignoreMouse)
     });*/
-    win.loadFile('src/view/index.html');
+    await win.loadFile('src/view/index.html');
 
     globalShortcut.register('insert', () => {
         ignoreMouse = !ignoreMouse;
@@ -66,8 +65,11 @@ function createWindow() {
     });
     setTimeout(() => {
         win.setPosition(parseInt('' + data.left, 0), parseInt('' + data.top, 0),true);
-    }, 1000);
+        win.webContents.send('resolution', {w: data.right - data.left, h: data.bottom - data.top,});
+    }, 2000);
 
 }
+// setTimeout(() => {
+    app.on('ready', createWindow);
+// },2000);
 
-app.on('ready', createWindow);
