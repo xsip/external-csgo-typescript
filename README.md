@@ -1,3 +1,4 @@
+# OUTDATED! CHECK V2: https://github.com/xsip/csgo-typescript-v2
 # external-csgo-typescript (WINDOWS ONLY!)
 external csgo example Typescript base by xsip
 
